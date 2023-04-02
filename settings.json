@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "input": {
+    "leftHand": {
+      "enabled": true,
+      "primary": true,
+      "topLeft": "w",
+      "top": "F",
+      "topRight": "P",
+      "left": "R",
+      "center": "S",
+      "right": "T",
+      "bottomLeft": "X",
+      "bottom": "C",
+      "bottomRight": "D"
+    },
+    "rightHand": {
+      "enabled": false,
+      "primary": false,
+      "topLeft": "L",
+      "top": "U",
+      "topRight": "Y",
+      "left": "N",
+      "center": "E",
+      "right": "I",
+      "bottomLeft": "H",
+      "bottom": ",",
+      "bottomRight": "."
+    },
+    "leftActionButton": "O",
+    "rightActionButton": "A"
+  },
+  "modes": {
+    "pointer": "G",
+    "none": "Meta+CmdOrCtrl+Alt+N",
+    "arrows": "Meta+CmdOrCtrl+Alt+A"
+  },
+  "pointer": {
+    "displays": {
+      "locked": true,
+      "mode": 1,
+      "layout": [
+        [
+          2528732444,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null
+        ]
+      ]
+    }
+  }
+}
