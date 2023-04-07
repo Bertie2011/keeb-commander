@@ -1,3 +1,4 @@
 export type MainProcessApi = {
-  onSetRegion: (callback: (dualHanded: boolean, x: number, y: number, width: number, height: number) => void) => void
+  onSetRegion: (callback: (x: number, y: number, width: number, height: number) => void) => void
+  onSetTile: (callback: (xIndex: number, yIndex: number, width: number, height: number) => void) => void
 };

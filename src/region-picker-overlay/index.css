@@ -4,17 +4,14 @@ html, body {
   height: 100%;
 }
 
-.container {
+.container-grid {
   display: inline-flex;
-}
-.pad {
-  flex-grow: 1;
-  display: flex;
   flex-direction: column;
-  background-image: linear-gradient();
 }
-.pad.pad-secondary {
-  display: none;
+.container-single {
+  display: flex;
+  width: 100%;
+  height: 100%;
 }
 .row {
   display: flex;
@@ -38,38 +35,39 @@ html, body {
   opacity: 0.5;
   animation-name: animate;
   animation-direction: normal;
-  animation-duration: 1s;
+  animation-duration: 0.5s;
   animation-fill-mode: both;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
+  margin: 4px;
+}
+.cell-0 {
+  background-image: repeating-linear-gradient(315deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), black calc(var(--offset) + 12px) calc(var(--offset) + 14px), white calc(var(--offset) + 14px) calc(var(--offset) + 16px));
 }
 .cell-1 {
-  background-image: repeating-linear-gradient(315deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), white calc(var(--offset) + 12px) calc(var(--offset) + 14px), black calc(var(--offset) + 14px) calc(var(--offset) + 16px));
+  background-image: repeating-linear-gradient(0deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), black calc(var(--offset) + 12px) calc(var(--offset) + 14px), white calc(var(--offset) + 14px) calc(var(--offset) + 16px));
 }
 .cell-2 {
-  background-image: repeating-linear-gradient(0deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), white calc(var(--offset) + 12px) calc(var(--offset) + 14px), black calc(var(--offset) + 14px) calc(var(--offset) + 16px));
+  background-image: repeating-linear-gradient(45deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), black calc(var(--offset) + 12px) calc(var(--offset) + 14px), white calc(var(--offset) + 14px) calc(var(--offset) + 16px));
 }
 .cell-3 {
-  background-image: repeating-linear-gradient(45deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), white calc(var(--offset) + 12px) calc(var(--offset) + 14px), black calc(var(--offset) + 14px) calc(var(--offset) + 16px));
+  background-image: repeating-linear-gradient(270deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), black calc(var(--offset) + 12px) calc(var(--offset) + 14px), white calc(var(--offset) + 14px) calc(var(--offset) + 16px));
 }
 .cell-4 {
-  background-image: repeating-linear-gradient(270deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), white calc(var(--offset) + 12px) calc(var(--offset) + 14px), black calc(var(--offset) + 14px) calc(var(--offset) + 16px));
-}
-.cell-5 {
-  background-image: radial-gradient(2px circle, white 0px 1px, black 1px 2px, transparent 2px);
+  background-image: radial-gradient(2px circle, black 0px 1px, white 1px 2px, transparent 2px);
   background-size: 16px 16px;
 }
+.cell-5 {
+  background-image: repeating-linear-gradient(90deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), black calc(var(--offset) + 12px) calc(var(--offset) + 14px), white calc(var(--offset) + 14px) calc(var(--offset) + 16px));
+}
 .cell-6 {
-  background-image: repeating-linear-gradient(90deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), white calc(var(--offset) + 12px) calc(var(--offset) + 14px), black calc(var(--offset) + 14px) calc(var(--offset) + 16px));
+  background-image: repeating-linear-gradient(225deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), black calc(var(--offset) + 12px) calc(var(--offset) + 14px), white calc(var(--offset) + 14px) calc(var(--offset) + 16px));
 }
 .cell-7 {
-  background-image: repeating-linear-gradient(225deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), white calc(var(--offset) + 12px) calc(var(--offset) + 14px), black calc(var(--offset) + 14px) calc(var(--offset) + 16px));
+  background-image: repeating-linear-gradient(180deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), black calc(var(--offset) + 12px) calc(var(--offset) + 14px), white calc(var(--offset) + 14px) calc(var(--offset) + 16px));
 }
 .cell-8 {
-  background-image: repeating-linear-gradient(180deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), white calc(var(--offset) + 12px) calc(var(--offset) + 14px), black calc(var(--offset) + 14px) calc(var(--offset) + 16px));
-}
-.cell-9 {
-  background-image: repeating-linear-gradient(135deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), white calc(var(--offset) + 12px) calc(var(--offset) + 14px), black calc(var(--offset) + 14px) calc(var(--offset) + 16px));
+  background-image: repeating-linear-gradient(135deg, transparent calc(var(--offset) + 0px) calc(var(--offset) + 12px), black calc(var(--offset) + 12px) calc(var(--offset) + 14px), white calc(var(--offset) + 14px) calc(var(--offset) + 16px));
 }
 /*
 .cell-1 {

@@ -1,7 +1,7 @@
 import { app, Menu, Tray } from 'electron';
 import { DisplayAnalyzerService } from './services/display-analyzer-service';
 import { Icons } from './services/icons';
-import { ModeManagerService } from './services/mode-manager-service';
+import { InputTrackerService } from './services/input-tracker-service';
 import { SettingsService } from './services/settings-service';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -15,17 +15,22 @@ if (require('electron-squirrel-startup')) {
 let tray = null;
 const settingsService = new SettingsService();
 const displayAnalyzer = new DisplayAnalyzerService(settingsService);
-let modeManagerService: ModeManagerService = null;
+let inputTrackerService: InputTrackerService = null;
 app.on('ready', async () => {
   await settingsService.load();
   displayAnalyzer.generateLayout();
-  modeManagerService = new ModeManagerService(settingsService.getSettings());
-  modeManagerService.registerShortcuts();
+  inputTrackerService = new InputTrackerService(settingsService.getSettings());
+  inputTrackerService.registerShortcuts();
+  
+  const trayMenu = Menu.buildFromTemplate([
+    { label: 'Toggle Enabled State', click: () => inputTrackerService.toggleKeysEnabled(), checked: false, type: 'checkbox', id: 'enabled' },
+    { label: 'Quit', click: () => shutdown() },
+  ]);
+  const enabledStateItem = trayMenu.getMenuItemById('enabled');
+  inputTrackerService.setOnKeysEnabled(s => enabledStateItem.checked = s);
 
   tray = new Tray(Icons.getTrayIcon(), 'a8718098-ff8d-45a7-bc72-c5547037b64b');
-  tray.setContextMenu(Menu.buildFromTemplate([{
-    label: 'Quit', click: () => shutdown()
-  }]));
+  tray.setContextMenu(trayMenu);
   tray.setToolTip('Keeb Commander');
 });
 
@@ -38,6 +43,6 @@ app.on('activate', () => {
 });
 
 function shutdown() {
-  modeManagerService.destroy();
+  inputTrackerService.destroy();
   app.quit();
 }

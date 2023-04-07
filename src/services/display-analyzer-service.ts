@@ -22,7 +22,7 @@ export class DisplayAnalyzerService {
     const otherDisplays = screen.getAllDisplays().filter(d => d.id != primary.id).sort(d => d.id);
     const inputSettings = this.settingsService.getSettings().input;
     if (otherDisplays.length == 0) this.generateSingleDisplayLayout(primary)
-    else if (otherDisplays.length == 1) this.generateDualDisplayLayout(primary, otherDisplays[0], inputSettings.leftHand.enabled, inputSettings.rightHand.enabled, inputSettings.leftHand.primary);
+    else if (otherDisplays.length == 1) this.generateDualDisplayLayout(primary, otherDisplays[0]);
     else if (otherDisplays.length >= 8) this.generateDumpLayout(primary, otherDisplays);
     else this.generateAutoLayout(primary, otherDisplays)
 
@@ -39,24 +39,14 @@ export class DisplayAnalyzerService {
     this.layout.layout[0][0] = primary.id;
   }
 
-  private generateDualDisplayLayout(primary: Display, secondary: Display, leftHandEnabled: boolean, rightHandEnabled: boolean, leftHandPrimary: boolean) {
+  private generateDualDisplayLayout(primary: Display, secondary: Display) {
     let primaryX = 0, primaryY = 0, secondaryX = 0, secondaryY = 0;
 
-    // Find positions
     if (primary.bounds.x + primary.bounds.width <= secondary.bounds.x) [primaryX, secondaryX] = [-1, 1];
     else if (secondary.bounds.x + secondary.bounds.width <= primary.bounds.x) [secondaryX, primaryX] = [-1, 1];
     else if (primary.bounds.y + primary.bounds.height <= secondary.bounds.y) [primaryY, secondaryY] = [-1, 1];
     else if (secondary.bounds.y + secondary.bounds.height <= primary.bounds.y) [secondaryY, primaryY] = [-1, 1];
 
-    // Find dual display options
-    if (leftHandEnabled && rightHandEnabled) {
-      this.layout.mode = DisplayMode.Dual;
-      if (primaryX < secondaryX || (primaryX == secondaryX && leftHandPrimary)) this.layout.layout[0] = [primary.id, secondary.id, null];
-      else if (primaryX > secondaryX || (primaryX == secondaryX && !leftHandPrimary)) this.layout.layout[0] = [secondary.id, primary.id, null];
-      return;
-    }
-
-    // Find multi display options
     this.layout.mode = DisplayMode.Multi;
     this.layout.layout[1 + primaryY][1 + primaryX] = primary.id;
     this.layout.layout[1 + secondaryY][1 + secondaryX] = secondary.id;
@@ -108,7 +98,6 @@ export class DisplayAnalyzerService {
 
 export enum DisplayMode {
   Single = 1,
-  Dual = 2,
-  Multi = 3
+  Multi = 2
 }
 export type DisplayLayout = { mode: DisplayMode, layout: number[][] }

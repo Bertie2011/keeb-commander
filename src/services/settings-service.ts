@@ -44,9 +44,8 @@ export class SettingsService {
     return {
       version: this.settingsVersion,
       input: {
-        leftHand: {
-          enabled: true,
-          primary: true,
+        enable: 'Meta+CmdOrCtrl+Alt+K',
+        grid: {
           topLeft: 'W',
           top: 'E',
           topRight: 'R',
@@ -57,26 +56,9 @@ export class SettingsService {
           bottom: 'C',
           bottomRight: 'V'
         },
-        rightHand: {
-          enabled: true,
-          primary: false,
-          topLeft: 'U',
-          top: 'I',
-          topRight: 'O',
-          left: 'J',
-          center: 'K',
-          right: 'L',
-          bottomLeft: 'M',
-          bottom: ',',
-          bottomRight: '.'
-        },
-        leftActionButton: ';',
-        rightActionButton: 'A'
-      },
-      modes: {
-        pointer: 'Meta+CmdOrCtrl+Alt+P',
-        none: 'Meta+CmdOrCtrl+Alt+N',
-        arrows: 'Meta+CmdOrCtrl+Alt+A'
+        leftMouseButton: 'J',
+        rightMouseButton: 'L',
+        showPointerGrid: 'K',
       },
       pointer: {
         displays: {

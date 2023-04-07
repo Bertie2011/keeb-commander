@@ -1,4 +1,4 @@
-import { Button, mouse } from "@nut-tree/nut-js";
+import { mouse } from "@nut-tree/nut-js";
 import { BrowserWindow, dialog, Display, screen } from "electron";
 import { DisplayMode } from "./display-analyzer-service";
 import { Settings } from "./settings";
@@ -9,15 +9,14 @@ declare const REGION_PICKER_OVERLAY_PRELOAD_WEBPACK_ENTRY: string;
 export class PointerPlacerService {
   private readonly showOverlayDevTools = false;
   private overlays: Map<number, BrowserWindow> = new Map<number, BrowserWindow>();
-  private requestDisableHandler: () => void;
 
   private options: Selection[][] = [];
 
   public constructor(private settings: Settings) {
   }
 
-  public enable(requestDisableHandler: () => void): void {
-    this.requestDisableHandler = requestDisableHandler;
+  public enable(): void {
+    // Do nothing
   }
 
   public disable(): void {
@@ -27,65 +26,56 @@ export class PointerPlacerService {
   public async showOptions(): Promise<void> {
     if (this.settings.pointer.displays.mode == DisplayMode.Single) {
       const display = this.findDisplay(0, 0);
-      if (display == undefined) return;
+      if (display == undefined) {
+        dialog.showErrorBox('Display not found', 'Could not find desplay with at row 0, column 0');
+        return;
+      }
       await this.showOptionsForDisplayRegion(display.id, { x: display.bounds.x, y: display.bounds.y, width: display.bounds.width, height: display.bounds.height }, { x: 0, y: 0, width: display.bounds.width, height: display.bounds.height });
-    } else if (this.settings.pointer.displays.mode == DisplayMode.Dual) {
-      const leftDisplay = this.findDisplay(0, 0), rightDisplay = this.findDisplay(1, 0);
-      if (leftDisplay == undefined || rightDisplay == undefined) return;
-      await this.showOptionsForTwoDisplays(leftDisplay, rightDisplay);
+    } else if (this.settings.pointer.displays.mode == DisplayMode.Multi) {
+      const displays = Array(3).fill(undefined).map((_, y) => Array(3).fill(undefined).map((_, x) => this.findDisplay(x, y)));
+      await this.showOptionsForDisplays(displays);
+    }
+  }
+
+  public async showOptionsForDisplays(displays: Display[][]): Promise<void> {
+    this.resetOptions();
+    this.hideAllWindows(displays.flat().filter(d => d != undefined).map(d => d.id));
+    for (let y = 0; y < 3; y++) {
+      for (let x = 0; x < 3; x++) {
+        const display = displays[y][x];
+        if (display == undefined) continue;
+        const displayRegion: Region = { x: display.bounds.x, y: display.bounds.y, width: display.bounds.width, height: display.bounds.height };
+        const selectionRegion: Region = { x: 0, y: 0, width: display.bounds.width, height: display.bounds.height };
+        this.options[y][x] = { 
+          display: display.id,
+          displayRegion: displayRegion,
+          selectionRegion: selectionRegion
+        };
+        const window: BrowserWindow = await this.createOverlay(display.id, displayRegion);
+        window.webContents.send('setTile', x, y, displayRegion.width, displayRegion.height);
+      }
     }
   }
 
   public async showOptionsForDisplayRegion(display: number, displayRegion: Region, selectionRegion: Region): Promise<void> {
     this.resetOptions();
-    console.log('calc button grid size');
-    let xOffset, width;
-    if (this.settings.input.leftHand.enabled && !this.settings.input.rightHand.enabled) {
-      xOffset = 0, width = 3;
-    } else if (!this.settings.input.leftHand.enabled && this.settings.input.rightHand.enabled) {
-      xOffset = 3, width = 3;
-    } else {
-      const dualHandedRecommended = Math.abs(1 - (selectionRegion.width / 2) / selectionRegion.height) < Math.abs(1 - selectionRegion.width / selectionRegion.height);
-      if (dualHandedRecommended) xOffset = 0, width = 6;
-      else if (this.settings.input.leftHand.primary) xOffset = 0, width = 3;
-      else xOffset = 3, width = 3;
-    }
     console.log('generate options');
-    this.fillOptions(display, displayRegion, selectionRegion, xOffset, width);
+    this.fillOptions(display, displayRegion, selectionRegion);
     console.log('hide all windows');
     this.hideAllWindows([display]);
     console.log('fetch overlay');
     const window: BrowserWindow = await this.createOverlay(display, displayRegion);
-    console.log('send region msg')
-    window.webContents.send('setRegion', width == 6, selectionRegion.x, selectionRegion.y, selectionRegion.width, selectionRegion.height);
+    console.log('send region msg');
+    window.webContents.send('setRegion', selectionRegion.x, selectionRegion.y, selectionRegion.width, selectionRegion.height);
   }
 
-  public async showOptionsForTwoDisplays(leftDisplay: Display, rightDisplay: Display): Promise<void> {
-    this.resetOptions();
-    const leftDisplayRegion = { x: leftDisplay.bounds.x, y: leftDisplay.bounds.y, width: leftDisplay.bounds.width, height: leftDisplay.bounds.height };
-    const leftSelectionRegion = { x: 0, y: 0, width: leftDisplay.bounds.width, height: leftDisplay.bounds.height };
-    this.fillOptions(leftDisplay.id, leftDisplayRegion, leftSelectionRegion, 0, 3);
-    const rightDisplayRegion = { x: rightDisplay.bounds.x, y: rightDisplay.bounds.y, width: rightDisplay.bounds.width, height: rightDisplay.bounds.height };
-    const rightSelectionRegion = { x: 0, y: 0, width: rightDisplay.bounds.width, height: rightDisplay.bounds.height };
-    this.fillOptions(rightDisplay.id, rightDisplayRegion, rightSelectionRegion, 3, 3);
-    
-    this.hideAllWindows([leftDisplay.id, rightDisplay.id]);
-    const leftWindow: BrowserWindow = await this.createOverlay(leftDisplay.id, leftDisplayRegion);
-    leftWindow.webContents.send('setRegion', false, leftSelectionRegion.x, leftSelectionRegion.y, leftSelectionRegion.width, leftSelectionRegion.height);
-    const rightWindow: BrowserWindow = await this.createOverlay(rightDisplay.id, rightDisplayRegion);
-    rightWindow.webContents.send('setRegion', false, rightSelectionRegion.x, rightSelectionRegion.y, rightSelectionRegion.width, rightSelectionRegion.height);
-  }
-
-  private async fillOptions(display: number, displayRegion: Region, selectionRegion: Region, xOffset: number, width: number): Promise<void> {
-    for (let y = 0; y < 3; y++) {
-      for (let x = 0; x < 6; x++) {
-        if (x < xOffset || x >= xOffset + width) continue;
-        
-        const row = y, col = x - xOffset;
-        this.options[y][x] = { display: display, displayRegion: displayRegion, selectionRegion: {
-          x: selectionRegion.x + (selectionRegion.width * col / width),
+  private async fillOptions(display: number, displayRegion: Region, selectionRegion: Region): Promise<void> {
+    for (let row = 0; row < 3; row++) {
+      for (let col = 0; col < 3; col++) {
+        this.options[row][col] = { display: display, displayRegion: displayRegion, selectionRegion: {
+          x: selectionRegion.x + (selectionRegion.width * col / 3),
           y: selectionRegion.y + (selectionRegion.height * row / 3),
-          width: selectionRegion.width / width,
+          width: selectionRegion.width / 3,
           height: selectionRegion.height / 3,
         } };
       }
@@ -131,7 +121,7 @@ export class PointerPlacerService {
         preload: REGION_PICKER_OVERLAY_PRELOAD_WEBPACK_ENTRY
       }
     });
-    window.setContentBounds({ x: displayRegion.x, y: displayRegion.y, width: displayRegion.width, height: displayRegion.height }, false);
+    window.setBounds({ x: displayRegion.x, y: displayRegion.y, width: displayRegion.width, height: displayRegion.height }, false);
     window.setAlwaysOnTop(true, 'pop-up-menu');
     window.setIgnoreMouseEvents(true);
 
@@ -150,12 +140,6 @@ export class PointerPlacerService {
     });
   }
 
-  public click(button: MouseClick) {
-    if (button == MouseClick.Left) mouse.click(Button.LEFT);
-    if (button == MouseClick.Right) mouse.click(Button.RIGHT);
-    this.requestDisableHandler();
-  }
-
   private hideAllWindows(except: number[]): void {
     for (const [display, window] of this.overlays) {
       if (except.includes(display)) continue;
@@ -164,16 +148,11 @@ export class PointerPlacerService {
   }
 
   private findDisplay(xIndex: number, yIndex: number): Display {
-    const display = screen.getAllDisplays().find(d => d.id == this.settings.pointer.displays.layout[yIndex][xIndex]);
-    if (display == undefined) {
-      dialog.showErrorBox('Display not found', `Could not find desplay with id ${this.settings.pointer.displays.layout[yIndex][xIndex]}`);
-      return;
-    }
-    return display;
+    return screen.getAllDisplays().find(d => d.id == this.settings.pointer.displays.layout[yIndex][xIndex]);
   }
 
   private resetOptions(): void {
-    this.options = Array(3).fill(undefined).map(() => Array(6).fill(undefined));
+    this.options = Array(3).fill(undefined).map(() => Array(3).fill(undefined));
   }
 
   public destroy(): void {
@@ -184,8 +163,4 @@ export class PointerPlacerService {
 }
 
 export type Region = { x: number, y: number, width: number, height: number };
-export enum MouseClick {
-  Left,
-  Right
-}
 type Selection = { display: number, displayRegion: Region, selectionRegion: Region };

@@ -1,54 +1,36 @@
 {
   "version": 1,
   "input": {
-    "leftHand": {
-      "enabled": true,
-      "primary": true,
-      "topLeft": "w",
-      "top": "F",
-      "topRight": "P",
-      "left": "R",
-      "center": "S",
-      "right": "T",
+    "enable": "Meta+CmdOrCtrl+Alt+K",
+    "grid": {
+      "topLeft": "W",
+      "top": "E",
+      "topRight": "R",
+      "left": "S",
+      "center": "D",
+      "right": "F",
       "bottomLeft": "X",
       "bottom": "C",
-      "bottomRight": "D"
+      "bottomRight": "V"
     },
-    "rightHand": {
-      "enabled": false,
-      "primary": false,
-      "topLeft": "L",
-      "top": "U",
-      "topRight": "Y",
-      "left": "N",
-      "center": "E",
-      "right": "I",
-      "bottomLeft": "H",
-      "bottom": ",",
-      "bottomRight": "."
-    },
-    "leftActionButton": "O",
-    "rightActionButton": "A"
-  },
-  "modes": {
-    "pointer": "G",
-    "none": "Meta+CmdOrCtrl+Alt+N",
-    "arrows": "Meta+CmdOrCtrl+Alt+A"
+    "leftMouseButton": "J",
+    "rightMouseButton": "L",
+    "showPointerGrid": "K"
   },
   "pointer": {
     "displays": {
-      "locked": true,
-      "mode": 1,
+      "locked": false,
+      "mode": 2,
       "layout": [
         [
-          2528732444,
+          null,
           null,
           null
         ],
         [
+          2528732444,
           null,
-          null,
-          null
+          2779098405
         ],
         [
           null,
