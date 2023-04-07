@@ -19,6 +19,10 @@ export type Settings = {
     showPointerGrid: string
   },
   pointer: {
-    displays: DisplayLayout & { locked: boolean };
+    displays: DisplayLayout & { locked: boolean },
+    relativeMovement: {
+      width: number,
+      height: number
+    }
   }
 };

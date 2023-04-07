@@ -5,14 +5,6 @@ import { WebpackPluginEntryPoint } from "@electron-forge/plugin-webpack/dist/Con
 
 export const entryPoints: WebpackPluginEntryPoint[] = [
   {
-    html: './src/index.html',
-    js: './src/renderer.ts',
-    name: 'main_window',
-    preload: {
-      js: './src/preload.ts',
-    },
-  },
-  {
     html: './src/region-picker-overlay/index.html',
     js: './src/region-picker-overlay/renderer.ts',
     name: 'region_picker_overlay',

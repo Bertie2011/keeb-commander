@@ -60,14 +60,13 @@ export class InputTrackerService {
   private async showPointerGrid(): Promise<void> {
     if (this.pointerGridVisible) return;
     this.pointerGridVisible = true;
-    this.pointerPlacerService.enable();
     await this.pointerPlacerService.showOptions();
   }
 
   private hidePointerGrid() {
     if (!this.pointerGridVisible) return;
     this.pointerGridVisible = false;
-    this.pointerPlacerService.disable();
+    this.pointerPlacerService.reset();
   }
 
   public destroy() {

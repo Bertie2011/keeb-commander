@@ -15,11 +15,7 @@ export class PointerPlacerService {
   public constructor(private settings: Settings) {
   }
 
-  public enable(): void {
-    // Do nothing
-  }
-
-  public disable(): void {
+  public reset(): void {
     this.hideAllWindows([]);
   }
 

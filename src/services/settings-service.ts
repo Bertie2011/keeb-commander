@@ -65,6 +65,10 @@ export class SettingsService {
           locked: false,
           mode: DisplayMode.Single,
           layout: [[null, null, null], [null, null, null], [null, null, null]]
+        },
+        relativeMovement: {
+          width: 480,
+          height: 270,
         }
       }
     }
