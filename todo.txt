@@ -1,5 +1,1 @@
-- Create keyboard layer.
-
-- Add display list in tray.
-- Fix multi display generation in display analyzer
-    - Add multi display pointer placer
+- Get rid of boolean overlay status tracking field in Input Tracker Service to support triggering a relative mouse movement when grid operation is active.
